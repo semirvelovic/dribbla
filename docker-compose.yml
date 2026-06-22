@@ -1,6 +1,46 @@
 services:
+  postgres:
+    image: postgres:16
+    container_name: dribbla-postgres
+    environment:
+      POSTGRES_DB: dribbla
+      POSTGRES_USER: dribbla
+      POSTGRES_PASSWORD: dribbla
+    ports:
+      - "5432:5432"
+    volumes:
+      - dribbla_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dribbla -d dribbla"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  job-service:
+    build:
+      context: ./job-service
+    container_name: dribbla-job-service
+    environment:
+      DB_USERNAME: dribbla
+      DB_PASSWORD: dribbla
+      DB_JDBC_URL: jdbc:postgresql://postgres:5432/dribbla
+    ports:
+      - "9000:9000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   api-gateway:
     build:
       context: ./api-gateway
+    container_name: dribbla-api-gateway
+    environment:
+      JOB_SERVICE_HOST: job-service
+      JOB_SERVICE_PORT: 9000
     ports:
       - "8080:8080"
+    depends_on:
+      - job-service
+
+volumes:
+  dribbla_postgres_data:

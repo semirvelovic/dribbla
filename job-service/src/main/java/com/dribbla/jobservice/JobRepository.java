@@ -20,4 +20,8 @@ public class JobRepository implements PanacheRepositoryBase<JobEntity, String> {
     public List<JobEntity> listAllOrdered() {
         return list("ORDER BY createdAt DESC");
     }
+
+    public JobEntity loadUnclaimedJob() {
+        return find("startedAt is null ORDER BY createdAt ASC").firstResult();
+    }
 }

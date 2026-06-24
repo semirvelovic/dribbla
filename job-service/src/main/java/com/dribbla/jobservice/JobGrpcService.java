@@ -1,5 +1,6 @@
 package com.dribbla.jobservice;
 
+import com.dribbla.grpc.ClaimJobRequest;
 import com.dribbla.grpc.GetJobRequest;
 import com.dribbla.grpc.JobResponse;
 import com.dribbla.grpc.JobService;
@@ -60,6 +61,19 @@ public class JobGrpcService implements JobService {
                         .toList())
                 .build();
         return Uni.createFrom().item(response);
+    }
+
+    @Override
+    @Transactional
+    @Blocking
+    public Uni<JobResponse> claimJob(ClaimJobRequest request) {
+        String workerId = request.getWorkerId();
+        JobEntity job = jobRepository.loadUnclaimedJob();
+        if (job == null) {
+            return Uni.createFrom().item(JobResponse.newBuilder().build());
+        }
+
+        return Uni.createFrom().item(JobMapper.toGrpc(job));
     }
 
 }

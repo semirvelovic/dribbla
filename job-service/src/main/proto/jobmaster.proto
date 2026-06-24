@@ -10,6 +10,7 @@ service JobService {
   rpc SubmitJob(SubmitJobRequest) returns (JobResponse);
   rpc GetJob(GetJobRequest) returns (JobResponse);
   rpc ListJobs(ListJobsRequest) returns (ListJobsResponse);
+  rpc ClaimJob(ClaimJobRequest) returns (JobResponse);
 }
 
 message SubmitJobRequest {
@@ -39,5 +40,9 @@ message JobResponse {
 
 message ListJobsResponse {
   repeated JobResponse jobs = 1;
+}
+
+message ClaimJobRequest {
+  string worker_id = 1;
 }
 

@@ -41,6 +41,18 @@ services:
       - "8080:8080"
     depends_on:
       - job-service
-
+    
+  worker-service:
+    build:
+      context: ./worker-service
+    #container_name: dribbla-worker-service
+    deploy:
+      mode: replicated
+      replicas: 2
+    environment:
+      JOB_SERVICE_HOST: job-service
+      JOB_SERVICE_PORT: 9000
+    depends_on:
+      - job-service
 volumes:
   dribbla_postgres_data:

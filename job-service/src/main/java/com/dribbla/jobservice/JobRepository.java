@@ -22,6 +22,6 @@ public class JobRepository implements PanacheRepositoryBase<JobEntity, String> {
     }
 
     public JobEntity loadUnclaimedJob() {
-        return find("startedAt is null ORDER BY createdAt ASC").firstResult();
+        return find("workerId is null ORDER BY createdAt ASC").firstResult();
     }
 }

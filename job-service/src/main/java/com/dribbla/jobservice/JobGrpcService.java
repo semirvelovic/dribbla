@@ -4,6 +4,8 @@ import com.dribbla.grpc.ClaimJobRequest;
 import com.dribbla.grpc.GetJobRequest;
 import com.dribbla.grpc.JobResponse;
 import com.dribbla.grpc.JobService;
+import com.dribbla.grpc.JobStatusRequest;
+import com.dribbla.grpc.JobStatusResponse;
 import com.dribbla.grpc.ListJobsRequest;
 import com.dribbla.grpc.ListJobsResponse;
 import com.dribbla.grpc.SubmitJobRequest;
@@ -72,8 +74,22 @@ public class JobGrpcService implements JobService {
         if (job == null) {
             return Uni.createFrom().item(JobResponse.newBuilder().build());
         }
+        job.workerId = workerId;
+        job.startedAt = LocalDateTime.now();
+        job.updatedAt = LocalDateTime.now();
+        jobRepository.persist(job);
 
         return Uni.createFrom().item(JobMapper.toGrpc(job));
+    }
+
+    @Override
+    @Transactional
+    @Blocking
+    public Uni<JobStatusResponse> updateJobStatus(JobStatusRequest request) {
+        JobEntity job = jobRepository.findById(request.getJobId());
+        job.status = request.getStatus();
+        jobRepository.persist(job);
+        return Uni.createFrom().item(JobStatusResponse.newBuilder().setStatus("ok").build());
     }
 
 }

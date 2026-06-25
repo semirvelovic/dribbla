@@ -7,6 +7,7 @@ import com.dribbla.grpc.GetJobRequest;
 import com.dribbla.grpc.JobService;
 import com.dribbla.grpc.ListJobsRequest;
 import com.dribbla.grpc.SubmitJobRequest;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.quarkus.grpc.GrpcClient;
 import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.GET;
@@ -26,7 +27,7 @@ public class JobResource {
     public Uni<JobDto> createJob(CreateJobRequest request) {
         var grpcRequest = SubmitJobRequest.newBuilder()
                 .setName(request.name())
-                .setPayloadJson(request.payloadJson())
+                .setPayloadJson(toPayloadJson(request.payloadJson()))
                 .build();
 
         return jobService.submitJob(grpcRequest)
@@ -55,5 +56,13 @@ public class JobResource {
                         .stream()
                         .map(JobMapper::toDto)
                         .toList());
+    }
+
+    private String toPayloadJson(JsonNode payloadJson) {
+        if (payloadJson == null || payloadJson.isNull()) {
+            return "{}";
+        }
+
+        return payloadJson.isTextual() ? payloadJson.asText() : payloadJson.toString();
     }
 }

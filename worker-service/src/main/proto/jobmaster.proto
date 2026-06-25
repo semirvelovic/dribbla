@@ -11,6 +11,7 @@ service JobService {
   rpc GetJob(GetJobRequest) returns (JobResponse);
   rpc ListJobs(ListJobsRequest) returns (ListJobsResponse);
   rpc ClaimJob(ClaimJobRequest) returns (JobResponse);
+  rpc UpdateJobStatus(JobStatusRequest) returns (JobStatusResponse);
 }
 
 message SubmitJobRequest {
@@ -33,9 +34,10 @@ message JobResponse {
   string status = 4;
   string created_at = 5;
   string updated_at = 6;
-  string started_at = 7;
-  string finished_at = 8;
-  string error_message = 9;
+  string worker_id = 7;
+  string started_at = 8;
+  string finished_at = 9;
+  string error_message = 10;
 }
 
 message ListJobsResponse {
@@ -44,5 +46,14 @@ message ListJobsResponse {
 
 message ClaimJobRequest {
   string worker_id = 1;
+}
+
+message JobStatusRequest {
+  string job_id = 1;
+  string status = 2;
+}
+
+message JobStatusResponse {
+  string status = 1;
 }
 

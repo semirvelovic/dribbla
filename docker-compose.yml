@@ -48,7 +48,7 @@ services:
     #container_name: dribbla-worker-service
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
     environment:
       JOB_SERVICE_HOST: job-service
       JOB_SERVICE_PORT: 9000
